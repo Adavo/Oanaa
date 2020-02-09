@@ -77,7 +77,15 @@ function serve() {
         writeBundle() {
             if (!started) {
                 started = true;
-
+                require("child_process").spawn(
+                    "npm",
+                    ["run", "electron"],
+                    {
+                        stdio: ["ignore", "inherit", "inherit"],
+                        shell: true
+                    }
+                );
+                /*
                 require("child_process").spawn(
                     "npm",
                     ["run", "start", "--", "--dev"],
@@ -86,6 +94,7 @@ function serve() {
                         shell: true
                     }
                 );
+                */
             }
         }
     };
