@@ -6,6 +6,7 @@ import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
 import autoprefixer from "autoprefixer";
 import babel from "rollup-plugin-babel";
+import builtins from "rollup-plugin-node-builtins";
 
 const production = !process.env.ROLLUP_WATCH;
 const preprocess = sveltePreprocess({
@@ -34,6 +35,7 @@ export default {
                 css.write("public/build/bundle.css");
             } // improve perf
         }),
+        builtins(),
         babel({
             extensions: [".js", ".mjs", ".html", ".svelte"],
             include: ["src/**", "node_modules/svelte/**"],

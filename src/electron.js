@@ -1,7 +1,6 @@
 // electron
-const { app, BrowserWindow, Menu } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
-
 require("electron-reload")(path.join(__dirname, "../public/"));
 
 function createWindow() {
@@ -19,25 +18,6 @@ function createWindow() {
 
     // Open the DevTools.
     win.webContents.openDevTools();
-
-    const menu = Menu.buildFromTemplate([
-        {
-            label: "File",
-            submenu: [
-                {
-                    label: "New Game",
-                    click: () => {
-                        win.webContents.send("NEW_GAME");
-                    }
-                },
-                { label: "Save Game" },
-                { label: "Load Game" },
-                { type: "separator" },
-                { label: "Exit", role: "quit" }
-            ]
-        }
-    ]);
-    Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished

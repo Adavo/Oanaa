@@ -2,6 +2,7 @@
   import Viewer from "./Viewer.svelte";
   import Toolbox from "./Toolbox.svelte";
   import Explorer from "./Explorer.svelte";
+  import Menu from "./Menu.svelte";
 
   let rightWidth = 300;
   let isResizing = false;
@@ -45,6 +46,7 @@
 </style>
 
 <main>
+  <Menu />
   <div class="left">
     <Explorer />
   </div>
