@@ -6,7 +6,7 @@ import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
 import autoprefixer from "autoprefixer";
 import babel from "rollup-plugin-babel";
-import builtins from "rollup-plugin-node-builtins";
+import builtins from "@joseph184/rollup-plugin-node-builtins";
 
 const production = !process.env.ROLLUP_WATCH;
 const preprocess = sveltePreprocess({
