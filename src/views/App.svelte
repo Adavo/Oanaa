@@ -3,15 +3,23 @@
   import Toolbox from "./Toolbox.svelte";
   import Explorer from "./Explorer.svelte";
   import Menu from "./Menu.svelte";
+  import { onDestroy } from "svelte";
+  import AppSettingsStore from "../store/appSettingsStore.js";
+  import AppSettings from "../models/appSettings.js";
+  const fs = require("fs");
 
-  let rightWidth = 300;
-  let isResizing = false;
-
-  function resize(event) {
-    if (isResizing) {
-      //rightWidth-=event.movementX;
-    }
+  if (fs.existsSync("./settings.json")) {
+    let settings = new AppSettings(JSON.parse(fs.readFileSync("./settings.json")));
+    AppSettingsStore.appSettings.set(settings);
   }
+
+  // watcher to save settings as soon as they changed
+  const appSettingsWatcher = AppSettingsStore.appSettings.subscribe(value => {
+    if (value) {
+      fs.writeFileSync("./settings.json", JSON.stringify(value));
+    }
+  });
+  onDestroy(appSettingsWatcher);
 </script>
 
 <style lang="scss">
@@ -32,6 +40,7 @@
     display: flex;
     height: 100%;
     position: relative;
+    width: 300px;
     .resizer {
       display: none;
       position: absolute;
@@ -53,13 +62,7 @@
   <div class="middle">
     <Viewer />
   </div>
-  <div class="right" style={'width:' + rightWidth + 'px;'}>
-    <div
-      class="resizer"
-      on:mousemove={resize}
-      on:mousedown={() => (isResizing = true)}
-      on:mouseup={() => (isResizing = false)}
-      on:mouseleave={() => (isResizing = false)} />
+  <div class="right">
     <Toolbox />
   </div>
 </main>

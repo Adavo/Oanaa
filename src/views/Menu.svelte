@@ -3,11 +3,25 @@
   const fs = require("fs");
   import { onDestroy } from "svelte";
   import GameStore from "../store/gameStore.js";
+  import AppSettingsStore from "../store/appSettingsStore.js";
   import Game from "../models/game";
   import Scene from "../models/scene";
+  import AppSettings from "../models/appSettings.js";
 
   let game = GameStore.game;
-  let gameFilePath;
+  let appSettings = AppSettingsStore.appSettings;
+
+  // load default project if exists
+  if (
+    $appSettings.previousProjectFilePath &&
+    fs.existsSync($appSettings.previousProjectFilePath)
+  ) {
+    GameStore.game.set(
+      new Game(
+        JSON.parse(fs.readFileSync($appSettings.previousProjectFilePath))
+      )
+    );
+  }
 
   function newGame() {
     GameStore.game.set(
@@ -20,22 +34,38 @@
 
   function loadGame() {
     const options = {
-      defaultPath: app.getPath("documents"),
+      defaultPath: $appSettings.previousProjectFilePath
+        ? $appSettings.previousProjectFilePath
+        : app.getPath("documents"),
       filters: [{ name: "Game file", extensions: ["json"] }]
     };
-    gameFilePath = dialog.showOpenDialogSync(null, options)[0];
-    GameStore.game.set(new Game(JSON.parse(fs.readFileSync(gameFilePath))));
+    $appSettings.previousProjectFilePath = dialog.showOpenDialogSync(
+      null,
+      options
+    )[0];
+    GameStore.game.set(
+      new Game(
+        JSON.parse(fs.readFileSync($appSettings.previousProjectFilePath))
+      )
+    );
   }
 
   function saveGame() {
-    if (!gameFilePath) {
+    if (!$appSettings.previousProjectFilePath) {
       const options = {
-        defaultPath: app.getPath("documents") + "/" + $game.name + ".json"
+        defaultPath: $appSettings.previousProjectFilePath
+          ? $appSettings.previousProjectFilePath
+          : app.getPath("documents") + "/" + $game.name + ".json"
       };
-      gameFilePath = dialog.showSaveDialogSync(null, options);
+      $appSettings.previousProjectFilePath = dialog.showSaveDialogSync(
+        null,
+        options
+      );
     }
-
-    fs.writeFileSync(gameFilePath, JSON.stringify($game));
+    fs.writeFileSync(
+      $appSettings.previousProjectFilePath,
+      JSON.stringify($game)
+    );
   }
 
   // build the menu template
