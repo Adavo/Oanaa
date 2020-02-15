@@ -23,6 +23,7 @@
     );
   }
 
+  // function of the menu
   function newGame() {
     GameStore.game.set(
       new Game({
