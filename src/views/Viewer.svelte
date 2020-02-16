@@ -19,13 +19,10 @@
       color: $color_viewer_toolbar_text;
       display: flex;
       align-items: center;
+      padding-left: 10px;
       .option {
         cursor: pointer;
-        margin: 0 20px;
-      }
-
-      .zoomLabel {
-        margin-left:10px;
+        margin: 0 10px;
       }
     }
 
@@ -71,26 +68,36 @@
 <div class="viewer">
   <div class="toolbar">
     {#if device === 'ipad'}
-      <div class="option" on:click={() => (device = 'iphone')}>iPad</div>
+      <div class="option" on:click={() => (device = 'iphone')}>
+        <i class="fas fa-tablet-alt" />
+      </div>
     {/if}
 
     {#if device === 'iphone'}
-      <div class="option" on:click={() => (device = 'ipad')}>iPhone</div>
+      <div class="option" on:click={() => (device = 'ipad')}>
+        <i class="fas fa-mobile-alt" />
+      </div>
     {/if}
 
     {#if orientation === 'landscape'}
       <div class="option" on:click={() => (orientation = 'portrait')}>
-        Landscape
+        <i class="fas fa-arrows-alt-h" />
       </div>
     {/if}
 
     {#if orientation === 'portrait'}
       <div class="option" on:click={() => (orientation = 'landscape')}>
-        Portrait
+        <i class="fas fa-arrows-alt-v" />
       </div>
     {/if}
 
-    <input type="range" min="25" max="100" step="25" bind:value={zoom} /> 
+    <input
+      class="option"
+      type="range"
+      min="25"
+      max="100"
+      step="25"
+      bind:value={zoom} />
     <span class="zoomLabel">{zoom} %</span>
 
   </div>

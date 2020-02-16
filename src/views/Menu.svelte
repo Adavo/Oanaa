@@ -2,30 +2,34 @@
   const { Menu, dialog, app } = window.require("electron").remote;
   const fs = require("fs");
   import { onDestroy } from "svelte";
-  import GameStore from "../store/gameStore.js";
-  import AppSettingsStore from "../store/appSettingsStore.js";
+  import { game } from "../store/gameStore.js";
+  import { appSettings } from "../store/appSettingsStore.js";
   import Game from "../models/game";
   import Scene from "../models/scene";
   import AppSettings from "../models/appSettings.js";
-
-  let game = GameStore.game;
-  let appSettings = AppSettingsStore.appSettings;
 
   // load default project if exists
   if (
     $appSettings.previousProjectFilePath &&
     fs.existsSync($appSettings.previousProjectFilePath)
   ) {
-    GameStore.game.set(
+    game.set(
       new Game(
         JSON.parse(fs.readFileSync($appSettings.previousProjectFilePath))
       )
     );
   }
 
+  // auto save every min
+  setInterval(() => {
+    if ($appSettings.previousProjectFilePath) {
+      saveGame();
+    }
+  }, 60000);
+
   // function of the menu
   function newGame() {
-    GameStore.game.set(
+    game.set(
       new Game({
         name: "Untitled Game",
         scenes: [new Scene({ name: "Scene 01" })]
@@ -44,7 +48,7 @@
       null,
       options
     )[0];
-    GameStore.game.set(
+    game.set(
       new Game(
         JSON.parse(fs.readFileSync($appSettings.previousProjectFilePath))
       )
@@ -101,7 +105,7 @@
   Menu.setApplicationMenu(menu);
 
   // watcher to make menu reactive
-  const gameWatcher = GameStore.game.subscribe(value => {
+  const gameWatcher = game.subscribe(value => {
     if (value) {
       menu.getMenuItemById("SAVE_GAME").enabled = true;
     }

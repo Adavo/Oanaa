@@ -1,15 +1,19 @@
 <script>
-  import GameStore from "../store/gameStore.js";
-  let game = GameStore.game;
+  import { game } from "../store/gameStore.js";
+  import { editor_selectedItem } from "../store/editorStore.js";
 
   let expandedItem = [];
-  let selectedItem;
+  let editableObject;
 
   function selectItem(item) {
-    selectedItem = item;
+    editor_selectedItem.set(item);
     if (expandedItem.indexOf(item) === -1) {
       expandItem(item);
     }
+  }
+
+  function editItem(item) {
+    editableObject = item;
   }
 
   function expandItem(item) {
@@ -55,19 +59,28 @@
   {#if $game}
     <div class="item">
       <div
-        class="label {selectedItem === $game ? 'selected' : ''}"
+        class="label {$editor_selectedItem === $game ? 'selected' : ''}"
         on:click={selectItem($game)}>
         <i
           on:click|stopPropagation={expandItem($game)}
           class="icon fas {expandedItem.indexOf($game) === -1 ? 'fa-chevron-right' : 'fa-chevron-down'}" />
-        {$game.name}
+        {#if editableObject !== $game}
+          <span on:dblclick|stopPropagation={editItem($game)}>
+            {$game.name}
+          </span>
+        {:else}
+          <input
+            on:blur={()=>editItem(null)}
+            type="text"
+            bind:value={$game.name} />
+        {/if}
       </div>
       {#if expandedItem.indexOf($game) !== -1}
         <div class="contains">
           {#each $game.scenes as scene}
             <div class="item">
               <div
-                class="label {selectedItem === scene ? 'selected' : ''}"
+                class="label {$editor_selectedItem === scene ? 'selected' : ''}"
                 on:click={selectItem(scene)}>
                 <i
                   on:click|stopPropagation={expandItem(scene)}

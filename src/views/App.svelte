@@ -4,17 +4,19 @@
   import Explorer from "./Explorer.svelte";
   import Menu from "./Menu.svelte";
   import { onDestroy } from "svelte";
-  import AppSettingsStore from "../store/appSettingsStore.js";
+  import { appSettings } from "../store/appSettingsStore.js";
   import AppSettings from "../models/appSettings.js";
   const fs = require("fs");
 
   if (fs.existsSync("./settings.json")) {
-    let settings = new AppSettings(JSON.parse(fs.readFileSync("./settings.json")));
-    AppSettingsStore.appSettings.set(settings);
+    let settings = new AppSettings(
+      JSON.parse(fs.readFileSync("./settings.json"))
+    );
+    appSettings.set(settings);
   }
 
   // watcher to save settings as soon as they changed
-  const appSettingsWatcher = AppSettingsStore.appSettings.subscribe(value => {
+  const appSettingsWatcher = appSettings.subscribe(value => {
     if (value) {
       fs.writeFileSync("./settings.json", JSON.stringify(value));
     }
